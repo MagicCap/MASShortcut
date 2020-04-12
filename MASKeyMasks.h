@@ -1,3 +1,5 @@
+#ifndef _MASKEYMASKS_H
+#define _MASKEYMASKS_H
 #import <Availability.h>
 
 // https://github.com/shpakovski/MASShortcut/issues/99
@@ -15,4 +17,5 @@
 #define NSEventModifierFlagControl  NSControlKeyMask
 #define NSEventModifierFlagOption   NSAlternateKeyMask
 #define NSEventModifierFlagShift    NSShiftKeyMask
+#endif
 #endif

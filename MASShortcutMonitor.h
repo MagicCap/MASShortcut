@@ -1,4 +1,7 @@
-#import "MASShortcut.h"
+#ifndef _MASSHORTCUTMONITOR_H
+#define _MASSHORTCUTMONITOR_H
+#import "./MASShortcut.h"
+#import <Cocoa/Cocoa.h>
 
 /**
  Executes action when a shortcut is pressed.
@@ -25,3 +28,4 @@
 - (void) unregisterAllShortcuts;
 
 @end
+#endif

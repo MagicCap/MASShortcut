@@ -1,4 +1,12 @@
-#import "MASKeyCodes.h"
+#ifndef _MASSHORTCUT_H
+#define _MASSHORTCUT_H
+#import "./MASKeyCodes.h"
+#import <Cocoa/Cocoa.h>
+
+NSString *MASLocalizedString(NSString *key, NSString *comment);
+
+static NSString *const MASLocalizationTableName;
+static NSString *const MASPlaceholderLocalizationString;
 
 /**
  A model class to hold a key combination.
@@ -79,3 +87,4 @@
 + (nonnull instancetype)shortcutWithEvent:(nonnull NSEvent *)anEvent;
 
 @end
+#endif

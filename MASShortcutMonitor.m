@@ -1,5 +1,7 @@
-#import "MASShortcutMonitor.h"
-#import "MASHotKey.h"
+#import <AppKit/AppKit.h>
+#import <Carbon/Carbon.h>
+#import "./MASShortcutMonitor.h"
+#import "./MASHotKey.h"
 
 @interface MASShortcutMonitor ()
 @property(assign) EventHandlerRef eventHandlerRef;

@@ -1,6 +1,8 @@
+#ifndef _MASKEYCODES_H
+#define _MASKEYCODES_H
 #import <Carbon/Carbon.h>
 #import <AppKit/AppKit.h>
-#import "MASKeyMasks.h"
+#import "./MASKeyMasks.h"
 
 // These glyphs are missed in Carbon.h
 typedef NS_ENUM(unsigned short, kMASShortcutGlyph) {
@@ -42,3 +44,4 @@ NS_INLINE UInt32 MASCarbonModifiersFromCocoaModifiers(NSUInteger cocoaFlags)
         | (cocoaFlags & NSEventModifierFlagControl ? controlKey : 0)
         | (cocoaFlags & NSEventModifierFlagShift ? shiftKey : 0);
 }
+#endif

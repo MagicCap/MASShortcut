@@ -1,4 +1,6 @@
-#import "MASShortcut.h"
+#ifndef _MASHOTKEY_H
+#define _MASHOTKEY_H
+#import "./MASShortcut.h"
 
 extern FourCharCode const MASHotKeySignature;
 
@@ -10,3 +12,4 @@ extern FourCharCode const MASHotKeySignature;
 + (instancetype) registeredHotKeyWithShortcut: (MASShortcut*) shortcut;
 
 @end
+#endif
