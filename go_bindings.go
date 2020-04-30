@@ -59,7 +59,9 @@ func (s *ShortcutMonitor) UnregisterShortcuts() {
 	s.cbLock.Unlock()
 }
 
-// GetGlobalShortcutMonitor is used to get the global shortcut monitor.
-func GetGlobalShortcutMonitor() *ShortcutMonitor {
+func getGlobalShortcutMonitor() *ShortcutMonitor {
 	return &ShortcutMonitor{monitor: C.get_default_shortcut_monitor(), cbs: []int{}, cbLock: sync.Mutex{}}
 }
+
+// GlobalShortcutMonitor defines the global shortcut monitor.
+var GlobalShortcutMonitor = getGlobalShortcutMonitor()
