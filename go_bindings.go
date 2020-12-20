@@ -5,56 +5,65 @@ package masshortcut
 // #cgo CFLAGS: -x objective-c -framework Cocoa -framework CoreFoundation -framework Carbon -framework AppKit
 // #cgo LDFLAGS: -framework Cocoa -framework CoreFoundation -framework Carbon -framework AppKit
 // #import "./MASShortcutMonitor.h"
-// void CHotkeyCallback(int CIndex);
-// void unload_all_shortcuts();
-// MASShortcut* register_shortcut(int Keys, int Modifiers, int HotkeyID);
-// void unload_shortcut(MASShortcut* shortcut);
+// void CHotkeyCallback(int Keys, int Modifiers);
+// void register_shortcut(int Keys, int Modifiers);
 import "C"
-import "sync"
+import (
+	"sync"
+	"unsafe"
+)
 
 var (
-	cbMap               = map[int]func(){}
-	currentShortcut     = 0
+	cbMap               = map[string]func(){}
+	currentShortcuts    = []string{}
 	currentShortcutLock = sync.Mutex{}
 )
 
+// Creates a hash.
+func hashgen(Keys, Modifiers int) string {
+	a := make([]byte, 16)
+	for i, v := range *(*[8]byte)(unsafe.Pointer(&Keys)) {
+		a[i] = v
+	}
+	for i, v := range *(*[8]byte)(unsafe.Pointer(&Modifiers)) {
+		a[i+8] = v
+	}
+	return string(a)
+}
+
 // CHotkeyCallback is the hotkey callback for the shortcuts.
 //export CHotkeyCallback
-func CHotkeyCallback(CIndex C.int) {
-	Index := int(CIndex)
-	s, ok := cbMap[Index]
+func CHotkeyCallback(CKeys, CModifiers C.int) {
+	Keys := int(CKeys)
+	Modifiers := int(CModifiers)
+	s, ok := cbMap[hashgen(Keys, Modifiers)]
 	if !ok {
 		return
 	}
 	go s()
 }
 
-// Shortcut is used to define a shortcut structure.
-type Shortcut struct {
-	cShortcut *C.MASShortcut
-	keyId     int
-}
-
-// Unload is used to unload a shortcut.
-func (s Shortcut) Unload() {
-	C.unload_shortcut(s.cShortcut)
-	delete(cbMap, s.keyId)
-}
-
 // RegisterShortcut is used to register a shortcut.
-func RegisterShortcut(Keys, Modifiers int, Callback func()) *Shortcut {
+func RegisterShortcut(Keys, Modifiers int, Callback func()) {
 	currentShortcutLock.Lock()
-	ThisID := currentShortcut
-	currentShortcut++
-	cbMap[ThisID] = Callback
+	includes := false
+	hash := hashgen(Keys, Modifiers)
+	for _, v := range currentShortcuts {
+		if v == hash {
+			includes = true
+			break
+		}
+	}
+	cbMap[hash] = Callback
 	currentShortcutLock.Unlock()
-	return &Shortcut{cShortcut: C.register_shortcut(C.int(Keys), C.int(Modifiers), C.int(ThisID)), keyId: ThisID}
+	if !includes {
+		C.register_shortcut(C.int(Keys), C.int(Modifiers))
+	}
 }
 
 // UnregisterShortcuts is used to unregister all of the shortcuts.
 func UnregisterShortcuts() {
 	currentShortcutLock.Lock()
-	C.unload_all_shortcuts()
-	cbMap = map[int]func(){}
+	cbMap = map[string]func(){}
 	currentShortcutLock.Unlock()
 }

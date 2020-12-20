@@ -4,10 +4,9 @@ void unload_all_shortcuts() {
     [[MASShortcutMonitor sharedMonitor] unregisterAllShortcuts];
 }
 
-MASShortcut* register_shortcut(int Keys, int Modifiers, int HotkeyID) {
+void register_shortcut(int Keys, int Modifiers) {
     MASShortcut* shortcut = [MASShortcut shortcutWithKeyCode:Keys modifierFlags:Modifiers];
-    [[MASShortcutMonitor sharedMonitor] registerShortcut:shortcut withAction:^(void) { CHotkeyCallback(HotkeyID); }];
-    return shortcut;
+    [[MASShortcutMonitor sharedMonitor] registerShortcut:shortcut withAction:^(void) { CHotkeyCallback(Keys, Modifiers); }];
 }
 
 void unload_shortcut(MASShortcut* shortcut) {
