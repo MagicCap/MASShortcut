@@ -54,6 +54,9 @@ func RegisterShortcut(Keys, Modifiers int, Callback func()) {
 			break
 		}
 	}
+	if !includes {
+		currentShortcuts = append(currentShortcuts, hash)
+	}
 	cbMap[hash] = Callback
 	currentShortcutLock.Unlock()
 	if !includes {
