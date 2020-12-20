@@ -7,7 +7,8 @@ package masshortcut
 // #import "./MASShortcutMonitor.h"
 // void CHotkeyCallback(int CIndex);
 // void unload_all_shortcuts();
-// void register_shortcut(int Keys, int Modifiers, int HotkeyID);
+// MASShortcut* register_shortcut(int Keys, int Modifiers, int HotkeyID);
+// void unload_shortcut(MASShortcut* shortcut);
 import "C"
 import "sync"
 
@@ -28,15 +29,26 @@ func CHotkeyCallback(CIndex C.int) {
 	go s()
 }
 
+// Shortcut is used to define a shortcut structure.
+type Shortcut struct {
+	cShortcut *C.MASShortcut
+	keyId     int
+}
+
+// Unload is used to unload a shortcut.
+func (s Shortcut) Unload() {
+	C.unload_shortcut(s.cShortcut)
+	delete(cbMap, s.keyId)
+}
 
 // RegisterShortcut is used to register a shortcut.
-func RegisterShortcut(Keys, Modifiers int, Callback func()) {
+func RegisterShortcut(Keys, Modifiers int, Callback func()) *Shortcut {
 	currentShortcutLock.Lock()
 	ThisID := currentShortcut
 	currentShortcut++
 	cbMap[ThisID] = Callback
 	currentShortcutLock.Unlock()
-	C.register_shortcut(C.int(Keys), C.int(Modifiers), C.int(ThisID))
+	return &Shortcut{cShortcut: C.register_shortcut(C.int(Keys), C.int(Modifiers), C.int(ThisID)), keyId: ThisID}
 }
 
 // UnregisterShortcuts is used to unregister all of the shortcuts.
